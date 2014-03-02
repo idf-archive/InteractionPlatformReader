@@ -4,9 +4,9 @@ from pattern.vector import KNN, count
 
 twitter, knn = Twitter(), KNN()
 
-for i in range(1, 10):
+for i in range(1, 20):
     print "trainning #GOOD tags"
-    for tweet in twitter.search('#good', start=i, count=10000):
+    for tweet in twitter.search('#good', start=i, count=100, cached=False):
         s = tweet.text.lower()
         p = '#good' in s and 'GOOD' # if true convert to WIN
         v = tag(s)
@@ -16,7 +16,7 @@ for i in range(1, 10):
             knn.train(v, type=p)
 
     print "trainning #BAD tags"
-    for tweet in twitter.search('#bad', start=i, count=10000):
+    for tweet in twitter.search('#bad', start=i, count=100, cached=False):
         s = tweet.text.lower()
         p = '#bad' in s and 'BAD'
         v = tag(s)
@@ -25,7 +25,7 @@ for i in range(1, 10):
         if v:
             knn.train(v, type=p)
 
-tweet = "wonderful day in the lab"
+tweet = "I had a delicious dinner"
 print "tweet: \"%s\", predicted hash tag: #%s"%(tweet, knn.classify(tweet))
-tweet = "disappointing day in the library"
+tweet = "I had a awful dinner"
 print "tweet: \"%s\", predicted hash tag: #%s"%(tweet, knn.classify(tweet))

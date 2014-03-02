@@ -7,8 +7,9 @@
 # 
 from goose import Goose 
 import urllib2
+from goose.text import StopWordsChinese
 urls = [
-	'http://www.newyorker.com/online/blogs/currency/2014/02/whats-the-point-of-city-logos.html',
+	# 'http://www.newyorker.com/online/blogs/currency/2014/02/whats-the-point-of-city-logos.html',
 	# 'http://news.investors.com/020714-689410-facebook-jokes-on-anniversary.htm?ven=yahoocp&src=aurlled&ven=yahoo',
 	# 'http://finance.yahoo.com/blogs/talking-numbers/these-two-charts-say-sell-this-highflying-stock-230649770.html',
 	# 'http://www.newyorker.com/online/blogs/currency/2014/02/whats-the-point-of-city-logos.html',
@@ -16,8 +17,9 @@ urls = [
 	# 'http://www.thestreet.com/_yahoo/video/12317830/time-to-get-aggressive-on-williams-sonoma-hollyfrontier.html?cm_ven=YAHOOV&cm_cat=FREE&cm_ite=NA&s=1',
 	# 'http://www.usatoday.com/story/tech/2014/02/07/week-tech-microsoft-facebook-twitter/5284443/',
 	# 'http://www.wired.com/wiredenterprise/2014/02/facebook-hacks/?mbid=synd_yfinance',
+    "http://ircs.p5w.net/ircs/topicInteraction/bbs.do?rid=7912"
 	]
-g = Goose()
+g = Goose({'stopwords_class': StopWordsChinese})
 text_file = open("Output.txt", "w")
 for url in urls:
 	article = g.extract(url=url)
@@ -26,7 +28,7 @@ for url in urls:
 	#article.publish_date = article_html.headers.get("last-modified", None)
 	#not desirable
 
-	text_file.write("title: %s\n"%article.title)
+	text_file.write("title: %s\n"%article.title.encode("utf-8"))
 	#text_file.write("datetime: %s\n"%article.publish_date)
 	text_file.write("body: %s\n"%article.cleaned_text[:-1].encode("utf-8")) # avoid encoding issues
 	text_file.write("==============================================\n")
