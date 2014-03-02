@@ -1,10 +1,13 @@
+
+
 __author__ = 'Danyang'
 import codecs
 import json
 import requests
+import time
 
 # r_id=0, 2k+ pages
-# for r_id \in [1, 2500] no topics
+# for r_id \in [1, 2656) no topics
 class IrcsCrawler(object):
     def __init__(self, r_id):
         self.pageNo = 1
@@ -13,9 +16,15 @@ class IrcsCrawler(object):
     def __parse(self):
         while True:
             # request
-            payload = {'pageNo': self.pageNo, 'rid': self.r_id}
-            r = requests.post('http://ircs.p5w.net/ircs/topicInteraction/questionPage.do', data=payload)
-            r_dict = json.loads(r.text)
+            r_dict = {}
+            try:
+                payload = {'pageNo': self.pageNo, 'rid': self.r_id}
+                r = requests.post('http://ircs.p5w.net/ircs/topicInteraction/questionPage.do', data=payload)
+                r_dict = json.loads(r.text)
+            except requests.ConnectionError as e:
+                print e.message
+                time.sleep(5)
+                continue
 
             # parse
             status = r_dict["status"]
@@ -29,10 +38,12 @@ class IrcsCrawler(object):
             if page_count<=0:
                 break
 
+
             # writing
             qna_list = value["q_all"]
+            stock_code = qna_list[0]["stockcode"]
             qna_json = json.dumps(qna_list, ensure_ascii=False, encoding='utf-8')
-            self.__write_to_file(qna_json)
+            self.__write_to_file(qna_json, stock_code)
 
             # next page
             self.pageNo += 1
@@ -42,9 +53,9 @@ class IrcsCrawler(object):
 
 
 
-    def __write_to_file(self, string):
+    def __write_to_file(self, string, stock_code):
         # file IO
-        filename = "json_raw/%d-%d.%s" % (self.r_id, self.pageNo, "json")
+        filename = "json_raw/%s-%d-%d.%s" % (stock_code, self.r_id, self.pageNo, "json")
         with codecs.open(filename, "w", encoding="utf-8") as f:
             f.write(string)
 
