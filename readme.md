@@ -7,6 +7,6 @@ University: Nanyang Technological University, Singapore
 Author: Daniel Zhang Danyang  
   
 Required Package  
-python-goose https://github.com/grangier/python-goose    
-nltk https://github.com/nltk/nltk; nltk.download() to install further corpora  
-pattern http://www.clips.ua.ac.be/pages/pattern https://github.com/clips/pattern (notice, Twitter API is changing)    
+[python-goose](https://github.com/grangier/python-goose)   
+[nltk](https://github.com/nltk/nltk); and then nltk.download() to install further corpora  
+[pattern](http://www.clips.ua.ac.be/pages/pattern) or [this](https://github.com/clips/pattern) (notice, Twitter API is changing)   

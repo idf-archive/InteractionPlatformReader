@@ -16,7 +16,6 @@ class IrcsCrawler(object):
     def __parse(self):
         while True:
             # request
-            r_dict = {}
             try:
                 payload = {'pageNo': self.pageNo, 'rid': self.r_id}
                 r = requests.post('http://ircs.p5w.net/ircs/topicInteraction/questionPage.do', data=payload)
@@ -28,7 +27,12 @@ class IrcsCrawler(object):
 
             # parse
             status = r_dict["status"]
-            value = json.loads(r_dict["value"])
+
+            try:
+                value = json.loads(r_dict["value"])
+            except ValueError as e:
+                print e.message
+                break
 
             if status!="Y":
                 break
