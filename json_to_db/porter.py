@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 import codecs
+import datetime
 from settings import *
 import  json
 import os
@@ -7,6 +8,7 @@ from json_to_db.models.models import *
 
 __author__ = 'Danyang'
 
+DATETIME_MASK = "%Y-%m-%d %H:%M:%S.0"
 def store_json():
     for root, _, files in os.walk(DATA_PATH):
         for f in files:
@@ -17,7 +19,7 @@ def store_json():
                 for item in content:
                     # parsing Stock
                     stock_code = item["stockcode"]
-                    stock_type = item["stocktype"]
+                    stock_type = item.get("stocktype", "S")
                     try:
                         stock = Stock.get(Stock.stock_code==stock_code)
                     except DoesNotExist:
@@ -37,21 +39,24 @@ def store_json():
 
                     # parsing Question
                     id = item["q_id"]
-                    datetime = item["q_date"]
+                    try:
+                        timestamp =  datetime.datetime.strptime(item["q_date"], DATETIME_MASK)
+                    except ValueError:
+                        timestamp = 0
                     content = item["q_content"]
-                    q_is_close_comment = bool(item["q_isclosecomment"])
-                    c_is_close_comment = bool(item["c_isclosecomment"])
-                    q_is_close_appraise = bool(item["q_iscloseappraise"])
-                    c_is_close_appraise = bool(item["c_iscloseappraise"])
+                    q_is_close_comment = bool(item.get("q_isclosecomment", 1))
+                    c_is_close_comment = bool(item.get("c_isclosecomment", 1))
+                    q_is_close_appraise = bool(item.get("q_iscloseappraise", 1))
+                    c_is_close_appraise = bool(item.get("c_iscloseappraise", 1))
                     is_canceled = bool(item["hasCancel"])
-                    score = item["score"]
+                    score = item.get("score", -999)
                     stock_code = stock
                     speculator_name = speculator
                     try:
                         question = Question.get(Question.id==id)
                     except DoesNotExist:
                         question = Question.create(id=id,
-                                            datetime=datetime,
+                                            datetime=timestamp,
                                             content=content,
                                             q_is_close_comment=q_is_close_comment,
                                             c_is_close_comment=c_is_close_comment,
@@ -78,7 +83,11 @@ def store_json():
                                                         stock_code=stock_code)
                             # parsing Reply
                             id = reply["r_id"]
-                            datetime = reply["r_date"]
+                            try:
+                                timestamp = datetime.datetime.strptime(reply["r_date"], DATETIME_MASK)
+                            except ValueError:
+                                timestamp = 0
+
                             content = reply["r_content"]
                             is_check = bool(reply["isCheck"])
                             question_id = question
@@ -87,7 +96,7 @@ def store_json():
                                 reply = Reply.get(Reply.id==id)
                             except DoesNotExist:
                                 reply = Reply.create(id=id,
-                                              datetime=datetime,
+                                              datetime=timestamp,
                                               content=content,
                                               is_check=is_check,
                                               question_id = question_id,
