@@ -6,5 +6,5 @@ from json_to_db.stock_name.update_stock import *
 
 database.connect()
 # create_table()
-# store_json()
-update_stock()
+store_json()
+# update_stock()
