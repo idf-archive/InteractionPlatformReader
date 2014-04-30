@@ -225,3 +225,6 @@ uwsgi_params
 # sublime text
 *.sublime-workspace
 *.json
+*.xlsx
+*.xls
+*.csv
